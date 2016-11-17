@@ -6,6 +6,7 @@ var gulp    = require('gulp');
 var fs      = require('fs');
 var ejs     = require('gulp-ejs');
 var plumber = require('gulp-plumber');
+var rename  = require('gulp-rename');
 
 var appDir    = './app/'
 var publicDir = '../';
@@ -20,5 +21,6 @@ gulp.task('ejs', function() {
             }
         }))
         .pipe(ejs(json))
+        .pipe(rename({extname: '.html'}))
         .pipe(gulp.dest(publicDir));
 });

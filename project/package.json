@@ -20,6 +20,7 @@
     "ejs": "^2.5.2",
     "gulp": "^3.9.1",
     "gulp-ejs": "^2.2.1",
-    "gulp-plumber": "^1.1.0"
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2"
   }
 }
