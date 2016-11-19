@@ -1,28 +1,21 @@
 <%
 var appRoot = './';
-var layoutsDir = appRoot + '_layouts/';
-include(layoutsDir + 'variables.ejs');
-var globData = getGlobalData();
-%>
-<%
-var assetsDir = 'assets/';
-var jsDir     = assetsDir + 'js/';
-var cssDir    = assetsDir + 'css/';
-var vendorDir = assetsDir + 'vendor/';
+include(appRoot + '_layouts/variables.ejs');
+var globData = getGlobalData(appRoot);
 %>
 <!DOCTYPE html>
 <html class="no-js" lang="jp">
 <head>
-    <%- include(layoutsDir + 'head.ejs') -%>
-    <script src="<%= vendorDir %>three-0.82.1/examples/js/loaders/MTLLoader.js"></script>
-    <script src="<%= vendorDir %>three-0.82.1/examples/js/loaders/OBJLoader.js"></script>
-    <script src="<%= vendorDir %>three-0.82.1/examples/js/controls/TrackballControls.js"></script>
-    <script src="<%= vendorDir %>three-0.82.1/examples/js/effects/AsciiEffect.js"></script>
+    <%- include(globData.path.layouts + 'head.ejs') -%>
+    <script src="<%= globData.dir.vendor %>three-0.82.1/examples/js/loaders/MTLLoader.js"></script>
+    <script src="<%= globData.dir.vendor %>three-0.82.1/examples/js/loaders/OBJLoader.js"></script>
+    <script src="<%= globData.dir.vendor %>three-0.82.1/examples/js/controls/TrackballControls.js"></script>
+    <script src="<%= globData.dir.vendor %>three-0.82.1/examples/js/effects/AsciiEffect.js"></script>
 
-    <script src="<%= vendorDir %>three-0.82.1/examples/js/renderers/Projector.js"></script>
-    <script src="<%= vendorDir %>three-0.82.1/examples/js/renderers/CanvasRenderer.js"></script>
+    <script src="<%= globData.dir.vendor %>three-0.82.1/examples/js/renderers/Projector.js"></script>
+    <script src="<%= globData.dir.vendor %>three-0.82.1/examples/js/renderers/CanvasRenderer.js"></script>
 
-    <script src="<%= vendorDir %>three-0.82.1/examples/js/libs/stats.min.js"></script>
+    <script src="<%= globData.dir.vendor %>three-0.82.1/examples/js/libs/stats.min.js"></script>
     <style type="text/css">
         .three-canvas {
             font-family: Monospace;

@@ -1,19 +1,12 @@
 <%
 var appRoot = './';
-var layoutsDir = appRoot + '_layouts/';
-include(layoutsDir + 'variables.ejs');
+include(appRoot + '_layouts/variables.ejs');
 var globData = getGlobalData();
-%>
-<%
-var assetsDir = 'assets/';
-var jsDir     = assetsDir + 'js/';
-var cssDir    = assetsDir + 'css/';
-var vendorDir = assetsDir + 'vendor/';
 %>
 <!DOCTYPE html>
 <html class="no-js" lang="jp">
 <head>
-    <%- include(layoutsDir + 'head.ejs') -%>
+    <%- include(globData.path.layouts + 'head.ejs') -%>
 </head>
 <body>
     <div class="top-bar">
