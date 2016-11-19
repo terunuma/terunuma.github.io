@@ -24,9 +24,10 @@ var globData = getGlobalData(appRoot);
         .container {
             width: 100%;
             height: 100%;
-            background: #202020 url('<%= globData.dir.img %>main_bg.jpg') no-repeat center center;
+            background: #020202 url('<%= globData.dir.img %>main_bg.jpg') no-repeat center center;
             background-size: auto 100%;
             color: #FEFEFE;
+            overflow: hidden;
         }
         .menu {
             position: absolute;
@@ -35,10 +36,17 @@ var globData = getGlobalData(appRoot);
             width: 100%;
             text-align: center;
         }
+        .three-canvas {
+            width: 90%;
+            height: 70%;
+            max-width: 372px;
+            max-height: 515px;
+            margin: 80px auto 0;
+        }
         .three-obj {
             width: 420px;
             height: 560px;
-            background: #060606 no-repeat center center;
+            background: #020202 no-repeat center center;
             background-size: auto 95%;
             border-radius: 6px;
             box-shadow: 0px 0px 24px 6px rgba(6,6,6,0.8);
@@ -54,8 +62,8 @@ var globData = getGlobalData(appRoot);
     </style>
 </head>
 <body>
-<canvas id="debug" style="position:absolute; left:100px"></canvas>
 <div class="container">
+    <canvas id="debug" style="position:absolute; left:0;"></canvas>
     <div class="three-canvas"></div>
     <!-- <div class="three-obj" style="background-image: url('<%= globData.dir.img %>sample.png');"></div> -->
 </div>
@@ -68,13 +76,13 @@ var globData = getGlobalData(appRoot);
 /// Part from g0v/twgeojson
 /// Graphic Engine and Geo Data Init Functions
 
-var init3d = function(){
+var init3d = function($canvas){
 
     /// Global : renderer
     renderer = new THREE.WebGLRenderer( { antialias: true } );
-    renderer.setClearColor( 0xb0b0b0 );
+    // renderer.setClearColor( 0xb0b0b0 );
     renderer.setPixelRatio( window.devicePixelRatio );
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize( $canvas.width(), $canvas.height() );
 
     /// Global : scene
     scene = new THREE.Scene();
@@ -151,8 +159,8 @@ var initSVGObject = function() {
 
 <script>
     /// Events from extrude shapes example
-    (function() {
-        var $target = $(document);
+    var setEvents = function($canvas) {
+        var $target = $canvas;
         function onWindowResize() {
 
             windowHalfX = window.innerWidth / 2;
@@ -221,7 +229,7 @@ var initSVGObject = function() {
             onWindowResize(e);
         });
 
-    })();
+    };
 
     function animateHandler() {
         /// compatibility : http://caniuse.com/requestanimationframe
@@ -265,9 +273,11 @@ var initSVGObject = function() {
         info.innerHTML = 'Shapes Extrusion via Geo Data<br/>Drag to spin';
         $container.append(info);
 
-        init3d();
+        init3d($canvas);
 
         $canvas.append(renderer.domElement);
+
+        setEvents($canvas);
 
         // NOTE: show FPS
         stats = new Stats();
