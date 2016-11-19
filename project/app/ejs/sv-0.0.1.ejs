@@ -1,0 +1,206 @@
+<%
+var appRoot = './';
+include(appRoot + '_layouts/variables.ejs');
+var globData = getGlobalData(appRoot);
+%>
+<!DOCTYPE html>
+<html class="no-js" lang="jp">
+<head>
+    <%- include(globData.path.layouts + 'head.ejs') -%>
+    <script src="<%= globData.dir.js %>vendor/three-0.82.1/examples/js/libs/tween.min.js"></script>
+    <script src="<%= globData.dir.js %>vendor/three-0.82.1/examples/js/controls/TrackballControls.js"></script>
+    <script src="<%= globData.dir.js %>vendor/three-0.82.1/examples/js/renderers/CSS3DRenderer.js"></script>
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+        }
+        body {
+            background-color: #f0f0f0;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            background: #202020 url('<%= globData.dir.img %>main_bg.jpg') no-repeat center center;
+            background-size: auto 100%;
+            color: #FEFEFE;
+        }
+        .menu {
+            position: absolute;
+            left: 0;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+        }
+        .three-obj {
+            width: 420px;
+            height: 560px;
+            background: #060606 no-repeat center center;
+            background-size: auto 95%;
+            border-radius: 6px;
+            box-shadow: 0px 0px 24px 6px rgba(6,6,6,0.8);
+        }
+        .console {
+            font-size: 9px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="three-canvas"></div>
+    <div class="three-obj" style="background-image: url('<%= globData.dir.img %>sample.png');"></div>
+    <div class="menu">
+        <button data-button-id="a">ボタンA</button>
+        <button data-button-id="b">ボタンB</button>
+        <button data-button-id="c">ボタンC</button>
+    </div>
+    <div class="console">
+        hogehoge
+    </div>
+</div>
+
+<script language="javascript">
+    $(function() {
+        var camera, scene, renderer;
+        var controls;
+        var cardObject;
+
+        init();// 初期化
+        animateHandler();// アニメーション開始
+
+        function init() {
+
+            // シーン設定
+            scene = new THREE.Scene();
+
+            // カメラ設定
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 5000);
+            camera.position.z = 1000;
+
+            // 3D オブジェクトをアサイン
+            cardObject = new THREE.CSS3DObject($('.three-obj').get(0));
+
+            // そのオブジェクトをシーンに追加
+            scene.add(cardObject);
+
+            // CSS3Dレンダラー設定
+            renderer = new THREE.CSS3DRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight); // 描画領域
+            renderer.domElement.style.position = 'absolute'; // スタイル設定 {position:absolute}
+            $('.three-canvas').append(renderer.domElement); // #containerにレンダラーを追加
+
+            // カメラコントローラー設定
+            controls = new THREE.TrackballControls(camera, renderer.domElement);//レンダラーとカメラを関連付け
+            controls.rotateSpeed = 1.0; // マウス感度設定
+            controls.noRotate = false;
+            controls.noZoom = true;
+            controls.noPan = true;
+            controls.addEventListener('change', $.throttle(100, function() {
+                var $console = $('.console');
+                // console.log(this);
+                // cardObject.rotation.y = 0;
+                $console.html(
+                    'camera.position -  x: ' + camera.position.x + ' y: ' + camera.position.y + ' z: ' + camera.position.z + '<br>'
+                    + 'camera.rotation -  x: ' + camera.rotation.x + ' y: ' + camera.rotation.y + ' z: ' + camera.rotation.z
+                );
+            } )); // ログ計測用
+            controls.addEventListener('change', renderScene); // 値が変わった（マウスで何か位置が変更された）ときに renderScene() を呼び出す
+
+            // 座標＆回転設定 A
+            var targetA = new THREE.Object3D();
+
+            // 座標＆回転設定 B
+            var targetB = new THREE.Object3D();
+            targetB.position.y = 300;
+            targetB.rotation.x = 3.14;
+
+            // 座標＆回転設定 C
+            var targetC = new THREE.Object3D();
+            targetC.position.y = 100;
+            targetC.position.z = 500;
+            targetC.rotation.x = 1;
+            targetC.rotation.y = 2;
+            targetC.rotation.z = 3;
+
+            // // #aがクリックされたら 設定A 方向にアニメーション
+            $('.menu button[data-button-id="a"]').on('click', function () {
+                transform(targetA, 1000);
+            });
+
+            // // #aがクリックされたら 設定B 方向にアニメーション
+            $('.menu button[data-button-id="b"]').on('click', function () {
+                transform(targetB, 1000);
+            });
+
+            // // #aがクリックされたら 設定C 方向にアニメーション
+            $('.menu button[data-button-id="c"]').on('click', function () {
+                transform(targetC, 1000);
+            });
+
+            //ウィンドウリサイズ時、onWindowResize()を呼び出す
+            $(window).on('resize', function() {
+                // カメラ設定
+                camera.aspect = window.innerWidth / window.innerHeight; // カメラの縦横比を再設定
+                camera.updateProjectionMatrix(); // 更新
+                renderer.setSize(window.innerWidth, window.innerHeight); // 描画領域を再設定
+            });
+
+            transform(targetA, 1000);
+        }
+
+        function transform(target, duration) {
+
+            TWEEN.removeAll(); // TWEEN処理が混在しないように一旦全て中止
+
+            /*
+            下記は座標と回転の2つに分けてアニメーション情報を設定し、
+            start()でアニメーションを開始しています。
+            */
+
+            // 座標アニメーション処理
+            new TWEEN.Tween(cardObject.position) // cardObject のposition情報を使って座標アニメーションさせますよ
+                .to({ x: target.position.x, y: target.position.y, z: target.position.z }, duration) // x,y,z移動先と所要時間
+                .easing(TWEEN.Easing.Exponential.InOut) // アニメーションパターン
+                .start(); // 設定が住んだら開始!!
+
+            // 回転アニメーション処理
+            new TWEEN.Tween(cardObject.rotation) // cardObject のposition情報を使って回転アニメーションさせますよ
+                .to({ x: target.rotation.x, y: target.rotation.y, z: target.rotation.z }, duration) // x,y,z回転と所要時間
+                .easing(TWEEN.Easing.Exponential.InOut) // アニメーションパターン
+                .start(); // 設定が住んだら開始!!
+
+            // 描画処理
+            new TWEEN.Tween(this)
+                .to({}, duration)
+                .onUpdate(renderScene)
+                .start();
+        }
+
+        /* ループ
+        requestAnimationFrameでフレームアニメーション化して
+        アニメーションとカメラコントロールを繰り返し更新しています。
+        */
+
+        function animateHandler() {
+            requestAnimationFrame(animateHandler); // three.js に内包されています。これにより繰り返し処理が実現できます。
+            TWEEN.update(); // tweenアニメーション更新
+            controls.update(); // カメラ位置更新
+        }
+
+        // TWEENでアニメーションする際に呼び出される
+        function renderScene() {
+            renderer.render(scene, camera);
+        }
+    });
+</script>
+
+
+</body>
+</html>
