@@ -1,6 +1,7 @@
 self.addEventListener('fetch', function (event) {
     event.respondWith(
-      new Response('サービスワーカーが動いています！')
+        // new Response('サービスワーカーが動いています！')
+        console.log('サービスワーカーが動いています！');
     );
 });
 
