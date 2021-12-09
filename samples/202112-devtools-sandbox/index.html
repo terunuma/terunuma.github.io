@@ -16,14 +16,29 @@
   </style>
   <script>
     const updateDate = () => {
-      const el = document.querySelector('[data-id="1"]')
-      el.innerText = (new Date())
+      document.querySelector('[data-id="1"]').innerText = (new Date())
+    }
+    const updateCount = (v) => {
+      document.querySelector('[data-id="1b"]').innerText = v
     }
     const mainFunc = () => {
-      const startTimer = () => {
+      const startTimeByTimeout = (numOfExec, callback) => {
+        if (isNaN(numOfExec) || numOfExec < 0) return
+        const doOnce = () => {
+          if (numOfExec < 0) return
+          numOfExec--
+          setTimeout(() => {
+            callback(numOfExec)
+            doOnce()
+          }, 1000)
+        }
+        doOnce()
+      }
+      startTimeByTimeout(60, updateCount)
+      const startTimerByInterval = () => {
         setInterval(updateDate, 1000)
       }
-      startTimer()
+      startTimerByInterval()
 
       const bindMouseEvent = () => {
         const div1 = document.querySelector('[data-id="2a"]')
@@ -63,6 +78,10 @@
   <h2>setInterval で繰り返し実行されている関数</h2>
   <div>
     現在の時刻: <span data-id="1">-</span>
+  </div>
+  <h2>setTimeout で繰り返し実行されている関数</h2>
+  <div>
+    カウント数: <span data-id="1b">-</span>
   </div>
   <h2>mouseenter, mouseleave で発火する関数</h2>
   <div>
