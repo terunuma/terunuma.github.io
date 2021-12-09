@@ -2,8 +2,71 @@
 <head>
   <meta charset="utf-8">
   <title>202112-devtools-sandbox</title>
+  <style type="text/css">
+    .rect {
+        border: 1px solid rgba(0,0,0,0.65);
+        background-color: rgba(128,255,128,0.65);
+        width: 100px;
+        height: 60px;
+    }
+    ul.list {
+      background-color: rgba(192, 192, 255, 0.65);
+      max-width: 16rem;
+    }
+  </style>
+  <script>
+    const mainFunc = () => {
+      const startTimer = () => {
+        setInterval(() => {
+          const el = document.querySelector('[data-id="1"]')
+          el.innerText = (new Date())
+        }, 1000)
+      }
+      startTimer()
+
+      const bindMouseEvent = () => {
+        const div1 = document.querySelector('[data-id="2a"]')
+        const div2 = document.querySelector('[data-id="2b"]')
+        const initDiv2 = () => {
+          div2.innerHTML = ''
+          div2.innerText = 'mouseenter でメニュー表示'
+        }
+        div1.addEventListener('mouseenter', () => {
+          const ul1 = document.createElement('ul')
+          ul1.classList.add('list')
+          const createLi = (v) => {
+            const li1 = document.createElement('li')
+            li1.innerText = v
+            return li1
+          }
+          ul1.appendChild(createLi('リスト1'))
+          ul1.appendChild(createLi('リスト2'))
+          ul1.appendChild(createLi('リスト3'))
+
+          div2.innerHTML = ''
+          div2.appendChild(ul1)
+        })
+        div1.addEventListener('mouseleave', initDiv2)
+        initDiv2()
+      }
+      bindMouseEvent()
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      mainFunc()
+    })
+  </script>
 </head>
 <body>
   <h1>Chrome DevTools を動作確認するためのページ</h1>
+  <h2>setInterval で繰り返し実行されている関数</h2>
+  <div>
+    現在の時刻: <span data-id="1">-</span>
+  </div>
+  <h2>mouseenter, mouseleave で発火する関数</h2>
+  <div>
+    <div data-id="2a" class="rect"></div>
+    <div2 data-id="2b">mouseenter でメニュー表示</div2>
+  </div>
 </body>
 </html>
