@@ -15,12 +15,13 @@
     }
   </style>
   <script>
+    const updateDate = () => {
+      const el = document.querySelector('[data-id="1"]')
+      el.innerText = (new Date())
+    }
     const mainFunc = () => {
       const startTimer = () => {
-        setInterval(() => {
-          const el = document.querySelector('[data-id="1"]')
-          el.innerText = (new Date())
-        }, 1000)
+        setInterval(updateDate, 1000)
       }
       startTimer()
 
